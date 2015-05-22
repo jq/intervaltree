@@ -255,6 +255,37 @@ def test_interval_interval_cmp():
     assert iv0.__cmp__(iv9) == -1
 
 
+def test_interval_interval_cmp_with_objects():
+    iv0 = Interval(0, 10)
+    ivd0 = Interval(0, 1, {'a': 1})
+    ivd1 = Interval(0, 1, {'a': 1})
+
+    assert ivd1.__cmp__(ivd0) == 0
+    assert ivd0.__cmp__(ivd1) == 0
+    assert ivd0.__cmp__(iv0) == -1
+    assert iv0.__cmp__(ivd0) == 1
+
+    class Loner(object):
+        def __eq__(self, other):
+            return False
+
+    ivl0 = Interval(2, 3, Loner())
+    ivl1 = Interval(2, 3, Loner())
+    # equal because type names equal. How else would you sort them?
+    assert ivl0.__cmp__(ivl0) == 0
+    assert ivl0.__cmp__(ivl1) == 0
+
+    class Socialite(object):
+        def __eq__(self, other):
+            return True
+
+    ivs0 = Interval(3, 4, Socialite())
+    ivs1 = Interval(3, 4, Socialite())
+    # equal because they __eq__() each other
+    assert ivs0.__cmp__(ivs0) == 0
+    assert ivs0.__cmp__(ivs1) == 0
+
+
 def test_interval_int_cmp():
     """
     Test comparisons with ints using __cmp__()
